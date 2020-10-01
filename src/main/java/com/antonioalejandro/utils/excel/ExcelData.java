@@ -38,7 +38,7 @@ public class ExcelData {
 	}
 
 	/**
-	 * Obtiene un Objecrt con el valor puede ser uno del enum ExcelDataTypes
+	 * Get an Object with the value, the type of the object can only be one of the enum <b>ExcelDataTypes</b>
 	 *
 	 * @return
 	 */
@@ -59,8 +59,7 @@ public class ExcelData {
 	}
 
 	/**
-	 * Devuelve el tipo de dato que contiene el objeto.Es un tipo de datos del enum
-	 * ExcelDataType
+	 * Returns the type of data contained in the object. This is a data type from the ExcelDataType enum
 	 *
 	 * @return
 	 */

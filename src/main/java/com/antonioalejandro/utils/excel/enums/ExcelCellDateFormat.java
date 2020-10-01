@@ -4,7 +4,7 @@ public enum ExcelCellDateFormat {
 	NUMBER_SHORT_WITHOUT_TIME, NUMBER_SHORT_WITH_TIME, NUMBER_LONG_WITHOUT_TIME, NUMBER_LONG_WITH_TIME, TIME;
 
 	/**
-	 * Obtiene el strign del formato a partir del valor del propio enum
+	 * Obtains the format strign from the value of the enum itself
 	 * 
 	 * @param format
 	 * @return

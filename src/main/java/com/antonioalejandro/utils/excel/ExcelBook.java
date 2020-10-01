@@ -6,7 +6,20 @@ import java.util.List;
 
 import com.antonioalejandro.utils.excel.interfaces.IExcelObject;
 
-public class ExcelBook<T extends IExcelObject> extends ExcelBookAbstract {
+
+/**
+
+ * This class is a implementation of the ExcelBookAbstract class
+
+ * @author: Antonio Alejandro Serrano RamÃ­rez
+
+ * @version: 1.0
+
+ * @see <a href = "http://www.antonioalejandro.com" /> www.antonioalejandro.com</a>
+
+ */
+
+public final class ExcelBook<T extends IExcelObject> extends ExcelBookAbstract {
 
 	private List<String> headers;
 	private List<T> data;
@@ -27,30 +40,32 @@ public class ExcelBook<T extends IExcelObject> extends ExcelBookAbstract {
 	}
 
 	/**
-	 * Establece la cabecera que tendrá el excel
+	 * Set the headers that the excel will have
 	 *
-	 * @param headers
+	 * @param <code>List<T></code> headers
 	 */
 	public void setHeaders(final List<String> headers) {
 		this.headers = headers;
 	}
 
 	/**
-	 * Establece los datos con los que se trabajaran
+	 * Set the data
 	 *
-	 * @param data
+	 * @param List<T> data. List with object that implement interface
 	 */
 	public void setData(final List<T> data) {
 		this.data = data;
 	}
-
+	/**
+	 * Get headers that was established
+	 */
 	@Override
 	public List<String> getHeaders() {
 		return headers;
 	}
 
 	/**
-	 * Crea el fichero excel en la ruta pasada como parámetro.
+	 * Creates the excel file in the received path as a parameter.
 	 *
 	 * @param path
 	 * @throws IOException
@@ -60,27 +75,26 @@ public class ExcelBook<T extends IExcelObject> extends ExcelBookAbstract {
 	}
 
 	/**
-	 * Devuelve el excel en un <b>byte[]</b>.
+	 * Return excel in a <b>byte[]</b>.
 	 *
 	 * @return byte[]
-	 * @throws IOException si no se ha coneguido convertir a byte[]
+	 * @throws IOException
 	 */
 	public byte[] prepareToSend() throws IOException {
 		return processBookToSend(data, headers);
 	}
 
 	/**
-	 * Establece el color que tiene de fondo la cabecera
+	 * Sets the background color of the header
 	 *
-	 * @param color
+	 * @param Color color
 	 */
 	public void setHeaderColor(final Color color) {
 		setColorHeader(color);
 	}
 
 	/**
-	 * Establece el color de las celdas que tiene los datos.No afecta a las de la
-	 * cabecera
+	 * Sets the background color of the data cells
 	 *
 	 * @param color
 	 */
@@ -89,8 +103,7 @@ public class ExcelBook<T extends IExcelObject> extends ExcelBookAbstract {
 	}
 
 	/**
-	 * Quita todas las lineas del excel excepto las que esten rellenas con datos(las
-	 * celdas del header y las celdas de los datos en sí).
+	 * Remove all the lines in the excel except those that are filled in with data (the header and data cells).
 	 */
 	public void setBlankSheet() {
 		setLinesSheet(false);

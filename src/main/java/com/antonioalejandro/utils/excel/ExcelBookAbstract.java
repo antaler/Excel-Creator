@@ -33,6 +33,19 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.antonioalejandro.utils.excel.enums.ExcelCellDateFormat;
 import com.antonioalejandro.utils.excel.interfaces.IExcelObject;
 
+/**
+ * 
+ * This class is a abstraction of the excel book
+ * 
+ * @author: Antonio Alejandro Serrano RamÃ­rez
+ * 
+ * @version: 1.0
+ * 
+ * @see <a href = "http://www.antonioalejandro.com" />
+ *      www.antonioalejandro.com</a>
+ * 
+ */
+
 public abstract class ExcelBookAbstract<T extends IExcelObject> {
 
 	private final XSSFWorkbook book;
@@ -69,18 +82,18 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	public abstract List<String> getHeaders();
 
 	/**
-	 * Obtiene el tipo de formato que pone a los campos que tenga un Date
+	 * It gets the type of formatting that puts the fields that have a Date
 	 *
-	 * @return
+	 * @return ExcelCellDatFormat
 	 */
 	public ExcelCellDateFormat getFormatDate() {
 		return formatDate;
 	}
 
 	/**
-	 * Establece el formato de fecha, creando un nuevo estilo de la celda
+	 * Sets the date format, creating a new style of the cell
 	 *
-	 * @param formatDate
+	 * @param ExcelCellDateFormat formatDate
 	 */
 	public void setFormatDate(final ExcelCellDateFormat formatDate) {
 		this.formatDate = formatDate;
@@ -88,8 +101,8 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * Añade el logo en formato byte[]. En caso de que se establezcan los logos con
-	 * byte[] e ImputStream, se prioriza el del byte[].
+	 * Add the logo in byte[] format. If the logo is set with byte[] and
+	 * ImputStream, the byte[] logo is prioritized.
 	 *
 	 * @param logo
 	 */
@@ -98,8 +111,9 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * Añade el logo en formato InputStream. En caso de que se establezcan los logos
-	 * con byte[] e ImputStream, se prioriza el del byte[].
+	 * 
+	 * Add the logo in InputStream format. If the logo is set with byte[] and
+	 * ImputStream, the byte[] logo is prioritized.
 	 *
 	 * @param logo
 	 */
@@ -108,7 +122,7 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * Cierra el excel y no se pueden hacer añadir mas datos
+	 * Close Excel and no more data can be added
 	 *
 	 * @throws IOException
 	 */
@@ -117,15 +131,16 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	// protected methods
+
 	/**
-	 * Procesa el excel y lo escribe en la ruta pasada como parametro. Si no hay
-	 * logo el excel empieza en el A1.
+	 * Processes the excel and writes it in the last path as a parameter. If there
+	 * is no logo the excel starts at A1.
 	 *
-	 * @param data    Lista de objetos que tengan que implementen la interfaz
-	 *                <b>IExcelObject</b>
-	 * @param headers Lista de Strings que continene los nombres de las cabeceras.
-	 * @param path    Direccion del fichero donde se guaradara el excel. <strong>SIN
-	 *                EXTENSION</strong>
+	 * @param data    List of objects that have the <b>IExcelObject</b> interface
+	 *                implemented
+	 * @param headers String list containing the names of the headers.
+	 * @param path    Address of the file where the excel will be saved
+	 *                <strong>without extension</strong>
 	 * @throws IOException
 	 */
 	protected final void processBook(final List<T> data, final List<String> headers, final String path)
@@ -141,12 +156,11 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * Procesa el excel para poder enviarlo con un byte[]. Si no hay logo el excel
-	 * empieza en el A1.
-	 *
-	 * @param data    Lista de objetos que tengan que implementen la interfaz
-	 *                <b>IExcelObject</b>
-	 * @param headers Lista de Strings que continene los nombres de las cabeceras.
+	 * It processes the excel to be able to send it with a byte . If there is no logo the excel starts at A1.
+	 * 
+	 * @param data    List of objects that have the <b>IExcelObject</b> interface
+	 *                implemented
+	 * @param headers String list containing the names of the headers.
 	 *
 	 * @return byte[]
 	 *
@@ -170,7 +184,7 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * Establece el color al header
+	 * Set header row color
 	 *
 	 * @param color
 	 */
@@ -182,7 +196,7 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * Establece el color a las celdas de los datos
+	 * Set data cells color
 	 *
 	 * @param color
 	 */
@@ -194,7 +208,7 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * Activa o desactiva el grid
+	 * Activate or deactivate the grid
 	 *
 	 * @param hasGridLines
 	 */
@@ -203,8 +217,9 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	// private methods
+	
 	/**
-	 * EScribbe el excel en un fichero
+	 * Write excel in path
 	 *
 	 * @param path
 	 * @throws IOException
@@ -216,7 +231,7 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * Ajusta las columnas al tamaño de los datos
+	 * Adjusts columns to data size
 	 *
 	 * @param num
 	 */
@@ -228,7 +243,7 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * Inserta el logo en el excel. Se le da prioridad al logo en formato byte[]
+	 * Insert the logo in the excel. Priority byte format .
 	 *
 	 * @throws IOException
 	 */
@@ -257,7 +272,7 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * Crear la fila del header y las columnas con los titulos.
+	 * Create the header row and columns with the titles.
 	 *
 	 * @param headers
 	 */
@@ -272,7 +287,7 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * Establece el estilo del header a una celda
+	 * Set the style of the header to single cell
 	 *
 	 * @param cell
 	 */
@@ -281,7 +296,7 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * Escribe los datos en en excel. NO crea un fichero
+	 * Write the data in excel. It does <b>NOT</b> create a file
 	 *
 	 * @param data
 	 */
@@ -292,7 +307,7 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 		XSSFCell cell;
 		ExcelBooleanData booleanData;
 		for (int i = 0; i < rows.size(); i++) {
-			objectData = data.get(i).getFields();
+			objectData = data.get(i).obtainFields();
 			for (int j = 0; j < objectData.size(); j++) {
 				excelDataCell = objectData.get(j);
 				cell = rows.get(i).createCell(j + headerColumn);
@@ -334,7 +349,7 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * Crea un numero de columnas pasado como parametro
+	 * Creates a number of received columns as a parameter
 	 *
 	 * @param num
 	 * @return
@@ -349,7 +364,7 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * Crear el estilo de las celdas que contengan fechas
+	 * Create the style of cells containing dates
 	 *
 	 * @param workbook
 	 * @return
@@ -369,7 +384,7 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * Crea el estilo de las celdas que contengan datos
+	 * Create the style of the cells containing data
 	 *
 	 * @param workbook
 	 * @return
@@ -388,7 +403,7 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * Crear el estilo de las celdas que sean el header
+	 * Create the style of the cells that are in the header
 	 *
 	 * @param workbook
 	 * @param font
@@ -413,7 +428,7 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * Crear una fuente con el texto en negrita
+	 * Create a font with bold text
 	 *
 	 * @param book
 	 * @return
@@ -425,11 +440,10 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	}
 
 	/**
-	 * EStablece los indices para la isnercion de los datos y del logo si lo hubiese
-	 * al ahora de ccrear el excel
+	 * Establishes the indexes for the insertion of the data and the logo, if it exists, when creating the excel
 	 */
 	private void setRowsAndColumnsIndex() {
-		if (logo != null && logoBytes != null) { // hay logo
+		if (logo != null && logoBytes != null) { // be logo
 			this.headerRow = 6;
 			this.headerColumn = 3;
 			this.logoRow = 1;
