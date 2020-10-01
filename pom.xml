@@ -45,25 +45,37 @@
 		</dependency>
 	</dependencies>
 	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
 		<repository>
-			<id>nexus-releases</id>
+			<id>ossrh</id>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.7</version>
+				<extensions>true</extensions>
 				<configuration>
-					<skip>true</skip>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
 				<executions>
 					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
+						<id>attach-javadocs</id>
 						<goals>
-							<goal>sign</goal>
+							<goal>jar</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -71,41 +83,25 @@
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
 				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.8</version>
+				<version>1.6.7</version>
 				<extensions>true</extensions>
 				<configuration>
-					<serverId>nexus-releases</serverId>
+					<serverId>ossrh</serverId>
 					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 					<autoReleaseAfterClose>true</autoReleaseAfterClose>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>2.2.1</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<useReleaseProfile>false</useReleaseProfile>
+					<releaseProfiles>release</releaseProfiles>
+					<goals>deploy</goals>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-
-	<profiles>
-		<!-- This profile will sign the JAR file, sources file, and javadocs file 
-			using the GPG key on the local machine. See: https://docs.sonatype.org/display/Repository/How+To+Generate+PGP+Signatures+With+Maven -->
-		<profile>
-			<id>release-sign-artifacts</id>
-			<activation>
-				<property>
-					<name>release</name>
-					<value>true</value>
-				</property>
-			</activation>
-		</profile>
-	</profiles>
 </project>
