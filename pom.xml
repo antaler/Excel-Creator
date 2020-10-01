@@ -4,7 +4,7 @@
   <artifactId>excel-creator</artifactId>
   <version>0.0.1</version>
   <name>Creador de Excel</name>
-  <description>Crea excels a partir de implementar una interfaz</description>
+  <description>Create excels by implementing an interface</description>
   <properties>
 		<java.version>11</java.version>
 		 <maven.compiler.source>${java.version}</maven.compiler.source>

@@ -20,7 +20,7 @@ public class Example implements IExcelObject{
     private Integer age;
     private boolean isMan;
 
-    public Ejemplo(String name, String lastname, Integer age, boolean isMan){
+    public Example(String name, String lastname, Integer age, boolean isMan){
         super();
         this.name = name;
         this.lastname = lastname;
@@ -34,7 +34,7 @@ public class Example implements IExcelObject{
                     new ExcelData(name),
                     new ExcelData(lastname),
                     new ExcelData(age),
-                    new ExcelData(isMan,"Man","Woman"));
+                    new ExcelData(new ExcelBooleanData(isMan, "Man", "Woman")));
     }
 }
 ```
@@ -47,25 +47,24 @@ The constructor are overloaded. You can put the sheetname only, the sheetname an
 
 ```java
 public static void main(String[] args) {
+    List<String> headers = Arrays.asList("Name","LastName", "Age","Gender");
     //the data
-    List<Ejemplo> data = Arrays.asList(new Ejemplo("Name 1","Lastname 1", 10, true),new Ejemplo("Name 2","Lastname 2", 20, false));
-    ExcelBook<Ejemplo> excelBook = new ExcelBook<Ejemplo>("Example");
+    List<Example> data = Arrays.asList(new Example("Name 1","Lastname 1", 10, true),new Example("Name 2","Lastname 2", 20, false));
+    ExcelBook<Example> excelBook = new ExcelBook<Example>("Example");
     // Set headers values
-    excelBook.setHeaders(Ejemplo.getHeaders());
+    excelBook.setHeaders(headers);
     // Set Data
-    excelBook.setHeaders(data);
+    excelBook.setData(data);
     // you can set color to headers row use java.awt.Color object
     excelBook.setHeaderColor(new Color(125,125,125));
     // you can set color to data cells
     excelBook.setDataColor(new Color(255,255,255));
     // you can remove cells borders
-    excelBook.setBlankSheet(true);
+    excelBook.setBlankSheet();
     //  if the excel contain dates is Data you can set a format. the formats are specified in ExcelCellDateFormat enum
     excelBook.setFormatDate(ExcelCellDateFormat.NUMBER_SHORT_WITH_TIME);
     // you can set a imagen like logo. you add image like byte[] or Input Stream
     excelBook.addLogo(/*byte[] or inputStream*/);
-    // you have to close the Excelbook to create safely
-    excelBook.close(); // throws IOException
     // when you are to prepare to send file o write file in pc. you have two options
     // write file in yout pc
     try{
@@ -75,6 +74,8 @@ public static void main(String[] args) {
     try{
         byte[] bytes = excelbook.prepareToSend();
     }catch(IOException e){}
+    // you have to close the Excelbook to create safely
+    excelBook.close(); // throws IOException
 }
 ```
 
