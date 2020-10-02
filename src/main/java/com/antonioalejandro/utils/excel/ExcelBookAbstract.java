@@ -93,7 +93,7 @@ public abstract class ExcelBookAbstract<T extends IExcelObject> {
 	/**
 	 * Sets the date format, creating a new style of the cell
 	 *
-	 * @param ExcelCellDateFormat formatDate
+	 * @param formatDate
 	 */
 	public void setFormatDate(final ExcelCellDateFormat formatDate) {
 		this.formatDate = formatDate;
