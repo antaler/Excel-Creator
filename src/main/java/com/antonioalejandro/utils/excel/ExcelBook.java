@@ -42,7 +42,7 @@ public final class ExcelBook<T extends IExcelObject> extends ExcelBookAbstract {
 	/**
 	 * Set the headers that the excel will have
 	 *
-	 * @param <code>List<T></code> headers
+	 * @param headers
 	 */
 	public void setHeaders(final List<String> headers) {
 		this.headers = headers;
@@ -51,7 +51,7 @@ public final class ExcelBook<T extends IExcelObject> extends ExcelBookAbstract {
 	/**
 	 * Set the data
 	 *
-	 * @param List<T> data. List with object that implement interface
+	 * @param data List with object that implement interface
 	 */
 	public void setData(final List<T> data) {
 		this.data = data;
@@ -87,7 +87,7 @@ public final class ExcelBook<T extends IExcelObject> extends ExcelBookAbstract {
 	/**
 	 * Sets the background color of the header
 	 *
-	 * @param Color color
+	 * @param color
 	 */
 	public void setHeaderColor(final Color color) {
 		setColorHeader(color);
