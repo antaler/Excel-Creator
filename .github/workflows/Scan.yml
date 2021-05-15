@@ -1,16 +1,14 @@
-name: Scan
-
+name: Build
 on:
   push:
     branches:
-      - develop
       - master
+      - develop
   pull_request:
-    branches: [master,develop]
-    types: [opened,synchronize,closed,reopened]
+    types: [opened, synchronize, reopened]
 jobs:
-  sonar:
-    name: Sonar
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
