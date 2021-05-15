@@ -4,9 +4,10 @@ on:
   push:
     branches:
       - develop
+      - master
   pull_request:
     branches: [main,develop]
-    types: [opened,synchronize]
+    types: [opened,synchronize,closed,reopened]
 jobs:
   sonar:
     name: Sonar
