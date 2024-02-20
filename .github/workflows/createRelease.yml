@@ -57,12 +57,13 @@ jobs:
         tag: "${{ steps.bump.outputs.version }}"
         tag_exists_error: false
         message: "${{ steps.bump.outputs.version }} release"
-    - name: ls
-      run: ls target -la
+    
+    - name: Install zip
+      uses: montudor/action-zip@v0.1.1
+    
     - name: Zip Jars
-      uses: montudor/action-zip@v1
-      with:
-        args: zip -qq -r bundle.zip target/*.jar
+      run: zip -q bundle.zip excel-creator.jar excel-creator-sources.jar excel-creator-javadoc.jar
+      working-directory: target
 
     - name: Create Release
       id: create_release
