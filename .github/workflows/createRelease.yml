@@ -1,0 +1,86 @@
+name: Create Release and Publish
+
+on:
+    workflow_run:
+      workflows: [SonarCloud]
+      types: [completed]
+
+jobs:
+  release:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+        contents: write
+        packages: write
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout Latest Commit
+      uses: actions/checkout@v2
+    
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Set up Maven
+      uses: stCarolas/setup-maven@v5
+      with:
+        maven-version: 3.8.2
+
+    - name: Install
+      run: mvn install
+      
+    - name: Bump Version
+      id: bump
+      uses: nnichols/maven-version-bump-action@v3
+      with:
+        github-token: ${{ secrets.github_token }}
+
+    - name: Update Version
+      run: mvn -B versions:set -DnewVersion=${{ steps.bump.outputs.version }} -DgenerateBackupPoms=false
+    
+    - name: Commit Version
+      uses: devops-infra/action-commit-push@master
+      with:
+        github_token: "${{ secrets.GITHUB_TOKEN }}"
+        add_timestamp: true
+        commit_prefix: "[VERSION]"
+        commit_message: "UPGRADE VERSION"
+        force: false
+        target_branch: master
+    
+    - name: Create Tag 
+      uses: rickstaa/action-create-tag@v1
+      id: "tag_create"
+      with:
+        tag: "${{ steps.bump.outputs.version }}"
+        tag_exists_error: false
+        message: "${{ steps.bump.outputs.version }} release"
+
+    - name: Zip Jars
+      uses: montudor/action-zip@v1
+      with:
+        args: zip -qq -r bundle.zip *.jar
+
+    - name: Create Release
+      id: create_release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: ${{ steps.bump.outputs.version }}
+        name: Release ${{ steps.bump.outputs.version }}
+
+    - name: Upload Release Asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./bundle.zip
+        asset_name: jars.zip
+        asset_content_type: application/zip
+
+    - name: Publish package
+      run: mvn --batch-mode deploy
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
