@@ -7,7 +7,7 @@
 	<packaging>jar</packaging>
 	<version>1.0.0</version>
 	<name>excel-creator</name>
-	<description>Create excels by implementing an interface</description>
+	<description>Create excel from a collection of items</description>
 	<url>https://github.com/antaler/excel-creator</url>
 	<licenses>
 		<license>
@@ -28,11 +28,22 @@
 		<connection>scm:git:git://github.com/antaler/excel-creator.git</connection>
 		<developerConnection>scm:git:ssh://github.com:antaler/excel-creator.git</developerConnection>
 	</scm>
+
 	<properties>
 		<java.version>17</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
+		<sonar.organization>antaler</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>GitHub Packages</name>
+			<url>https://maven.pkg.github.com/antaler/excel-creator</url>
+		</repository>
+	</distributionManagement>
 	<build>
 		<finalName>excel-creator</finalName>
 		<plugins>
@@ -48,11 +59,6 @@
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<includes>
-						<include>*.png</include>
-					</includes>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -87,9 +93,6 @@
 						<configuration>
 							<skip>${maven.test.skip}</skip>
 							<argLine>${argLine}</argLine>
-							<excludes>
-								<exclude>**/*IntegrationTest.java</exclude>
-							</excludes>
 						</configuration>
 					</execution>
 				</executions>
@@ -121,6 +124,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 		</plugins>
 	</build>
 
