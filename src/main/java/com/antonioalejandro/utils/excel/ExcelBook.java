@@ -1,112 +1,219 @@
 package com.antonioalejandro.utils.excel;
 
-import java.awt.Color;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.TreeSet;
 
-import com.antonioalejandro.utils.excel.interfaces.IExcelObject;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.ClientAnchor.AnchorType;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Drawing;
+import org.apache.poi.ss.usermodel.Picture;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.antonioalejandro.utils.excel.annotations.ExcelColumn;
+import com.antonioalejandro.utils.excel.annotations.ExcelItem;
+import com.antonioalejandro.utils.excel.styles.Styles;
 
-/**
+public class ExcelBook<T> {
 
- * This class is a implementation of the ExcelBookAbstract class
+	private final XSSFWorkbook book;
+	private final XSSFSheet sheet;
 
- * @author: Antonio Alejandro Serrano Ramírez
+	private int headerRow;
+	private int headerColumn;
+	private int logoRow;
+	private int logoColumn;
 
- * @version: 1.0
+	private int imageAnchor;
+	private int imageAnchor2;
 
- * @see <a href = "http://www.antonioalejandro.com" /> www.antonioalejandro.com</a>
+	private int columnsSize;
 
- */
+	private final XSSFCellStyle styleHeader;
+	private final XSSFCellStyle styleData;
 
-public final class ExcelBook<T extends IExcelObject> extends ExcelBookAbstract {
+	private TreeSet<ExcelData> metadata;
+	private ExcelItem excelItem;
 
-	private List<String> headers;
-	private List<T> data;
-
-	public ExcelBook(final List<String> headers, final List<T> data, final String sheetName) {
-		super(sheetName);
-		this.headers = headers;
-		this.data = data;
+	public ExcelBook(ExcelItem excelItem, TreeSet<ExcelData> metadata, Class<T> clazz) {
+		this.book = new XSSFWorkbook();
+		this.sheet = book.createSheet(excelItem.name());
+		this.styleHeader = Styles.header(book, excelItem.headerColor());
+		this.styleData = Styles.data(book, excelItem.dataColor());
+		this.metadata = metadata;
+		this.excelItem = excelItem;
+		sheet.setDisplayGridlines(excelItem.blank());
+		padding();
+		addLogo(clazz);
+		createHeaders(metadata.stream().map(ExcelData::getColumnData).map(ExcelColumn::title).toList());
 	}
 
-	public ExcelBook(final List<String> headers, final String sheetName) {
-		super(sheetName);
-		this.headers = headers;
+	final byte[] create(final Iterable<T> data) {
+		data.forEach(this::fillRow);
+		autosize();
+		try (final var bos = new ByteArrayOutputStream();) {
+			book.write(bos);
+			return bos.toByteArray();
+		} catch (IOException ignored) {
+			ignored.printStackTrace();
+		} finally {
+			try {
+				book.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return new byte[0];
+
 	}
 
-	public ExcelBook(final String sheetName) {
-		super(sheetName);
+	private void autosize() {
+		sheet.autoSizeColumn(0);
+		for (int i = 0; i < columnsSize; i++) {
+			sheet.autoSizeColumn(i + headerColumn);
+		}
 	}
 
-	/**
-	 * Set the headers that the excel will have
-	 *
-	 * @param headers
-	 */
-	public void setHeaders(final List<String> headers) {
-		this.headers = headers;
+	private byte[] loadFromFile() {
+		try (InputStream stream = new FileInputStream(excelItem.logo())) {
+			return stream.readAllBytes();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new byte[0];
+		}
 	}
 
-	/**
-	 * Set the data
-	 *
-	 * @param data List with object that implement interface
-	 */
-	public void setData(final List<T> data) {
-		this.data = data;
-	}
-	/**
-	 * Get headers that was established
-	 */
-	@Override
-	public List<String> getHeaders() {
-		return headers;
+	private byte[] loadFromClasspath(Class<T> clazz) {
+		var url = clazz.getClassLoader().getResource(excelItem.classPathLogo());
+		try (var inputStream = new FileInputStream(url.getFile())) {
+			return inputStream.readAllBytes();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new byte[0];
+		}
 	}
 
-	/**
-	 * Creates the excel file in the received path as a parameter.
-	 *
-	 * @param path
-	 * @throws IOException
-	 */
-	public void write(final String path) throws IOException {
-		processBook(data, headers, path);
+	private void addLogo(Class<T> clazz) {
+		byte[] image;
+
+		if (!excelItem.classPathLogo().isBlank()) {
+			image = loadFromClasspath(clazz);
+		} else if (!excelItem.logo().isBlank()) {
+			image = loadFromFile();
+		} else {
+			return;
+		}
+
+		final CreationHelper helper = book.getCreationHelper();
+		final int indexLogo = book.addPicture(image, HSSFWorkbook.PICTURE_TYPE_JPEG);
+		final Drawing<?> drawing = sheet.createDrawingPatriarch();
+		final ClientAnchor anchorLogo = helper.createClientAnchor();
+
+		anchorLogo.setCol1(logoColumn);
+		anchorLogo.setRow1(logoRow);
+		anchorLogo.setCol2(imageAnchor);
+		anchorLogo.setRow2(imageAnchor2);
+
+		anchorLogo.setAnchorType(AnchorType.MOVE_DONT_RESIZE);
+		drawing.createPicture(anchorLogo, indexLogo);
+		final Picture pict = drawing.createPicture(anchorLogo, indexLogo);
+		pict.resize(3, 4);
 	}
 
-	/**
-	 * Return excel in a <b>byte[]</b>.
-	 *
-	 * @return byte[]
-	 * @throws IOException
-	 */
-	public byte[] prepareToSend() throws IOException {
-		return processBookToSend(data, headers);
+	private void createHeaders(final List<String> headers) {
+		final XSSFRow headerRow = sheet.createRow(this.headerRow);
+		XSSFCell cell;
+		this.columnsSize = headers.size();
+		for (int i = 0; i < headers.size(); i++) {
+			cell = headerRow.createCell(i + headerColumn);
+			cell.setCellValue(headers.get(i));
+			cell.setCellStyle(this.styleHeader);
+		}
 	}
 
-	/**
-	 * Sets the background color of the header
-	 *
-	 * @param color
-	 */
-	public void setHeaderColor(final Color color) {
-		setColorHeader(color);
+	private XSSFRow nextDataRow() {
+		return sheet.createRow(++headerRow);
 	}
 
-	/**
-	 * Sets the background color of the data cells
-	 *
-	 * @param color
-	 */
-	public void setDataColor(final Color color) {
-		setColorData(color);
+	private void fillRow(T t) {
+		Method method;
+		var row = nextDataRow();
+		var offset = 0;
+		XSSFCell cell;
+		for (ExcelData excelData : metadata) {
+			cell = row.createCell(headerColumn + offset++);
+			method = getMethod(t, excelData);
+			addValue(method, cell, excelData, t);
+			if (method.getReturnType().equals(LocalDateTime.class)) {
+				cell.setCellStyle(
+						Styles.date(book, excelData.getColumnData().dateFormat().getFormat(), excelItem.dataColor()));
+			} else {
+				cell.setCellStyle(styleData);
+			}
+		}
 	}
 
-	/**
-	 * Remove all the lines in the excel except those that are filled in with data (the header and data cells).
-	 */
-	public void setBlankSheet() {
-		setLinesSheet(false);
+	private Method getMethod(T t, ExcelData excelData) {
+		try {
+			return t.getClass().getMethod("get%s".formatted(capitalize(excelData.getFieldName())), null);
+		} catch (NoSuchMethodException | SecurityException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	private void addValue(Method method, XSSFCell cell, ExcelData excelData, T t) {
+		try {
+			if (method.getReturnType().equals(String.class)) {
+				cell.setCellValue((String) method.invoke(t));
+			} else if (method.getReturnType().equals(Double.class)) {
+				cell.setCellValue((Double) method.invoke(t));
+			} else if (method.getReturnType().equals(Long.class)) {
+				cell.setCellValue((Long) method.invoke(t));
+			} else if (method.getReturnType().equals(Integer.class)) {
+				cell.setCellValue((Integer) method.invoke(t));
+			} else if (method.getReturnType().equals(LocalDateTime.class)) {
+				cell.setCellValue((LocalDateTime) method.invoke(t));
+			} else if (method.getReturnType().equals(Boolean.class)) {
+				cell.setCellValue(((Boolean) method.invoke(t)) ? excelData.getColumnData().trueValue()
+						: excelData.getColumnData().falseValue());
+			} else {
+				cell.setCellValue(method.invoke(t).toString());
+			}
+
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private String capitalize(String string) {
+		return string.substring(0, 1).toUpperCase().concat(string.substring(1));
+	}
+
+	private void padding() {
+		if (!excelItem.logo().isBlank() || !excelItem.classPathLogo().isBlank()) { // be logo
+			this.headerRow = 6;
+			this.headerColumn = 3;
+			this.logoRow = 1;
+		} else {
+			this.headerRow = 0;
+			this.headerColumn = 0;
+			this.logoRow = 0;
+		}
+		this.logoColumn = 0;
+		this.imageAnchor = 0;
+		this.imageAnchor2 = 0;
 	}
 
 }

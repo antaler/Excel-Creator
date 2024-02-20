@@ -1,4 +1,4 @@
-# Excel-Creator
+# *PREVIEW* Excel-Creator
 
 Easily generate an excel file
 ```xml
@@ -20,29 +20,20 @@ Implement this interface ``` IExcelObject ``` with a method:
 This Object have a overloaded constructor. The values that can accept are strings, Integers, Long, Double, Date and boolean. The boolean data can insert custom string values (true and false are default values) like an example with gender.
 
 ```java
-public class Example implements IExcelObject{
-
+@ExcelItem
+public class Example {
+    
+    @ExcelColum(order = 1)
     private String name;
+    
+    @ExcelColum(order = 2)
     private String lastname;
+    
+    @ExcelColum(order = 3)
     private Integer age;
+
+    @ExcelColum(order = 4, trueValue= "Man", falseValue="Woman")
     private boolean isMan;
-
-    public Example(String name, String lastname, Integer age, boolean isMan){
-        super();
-        this.name = name;
-        this.lastname = lastname;
-        this.age = age;
-        this.isMan = isMan;
-    }
-
-
-    public List<ExcelData> obtainFields(){
-        return Arrays.asList(
-                    new ExcelData(name),
-                    new ExcelData(lastname),
-                    new ExcelData(age),
-                    new ExcelData(new ExcelBooleanData(isMan, "Man", "Woman")));
-    }
 }
 ```
 
