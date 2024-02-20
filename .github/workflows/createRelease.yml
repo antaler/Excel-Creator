@@ -58,7 +58,7 @@ jobs:
         tag_exists_error: false
         message: "${{ steps.bump.outputs.version }} release"
     - name: ls
-      run: ls -la
+      run: ls target -la
     - name: Zip Jars
       uses: montudor/action-zip@v1
       with:
