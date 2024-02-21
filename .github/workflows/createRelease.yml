@@ -6,7 +6,7 @@ on:
       types: [completed]
 
 jobs:
-  release:
+  depoloy:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
         contents: write
@@ -22,11 +22,17 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+        server-id: ossrh
+        server-username: MAVEN_USERNAME
+        server-password: MAVEN_PASSWORD
 
     - name: Set up Maven
       uses: stCarolas/setup-maven@v5
       with:
-        maven-version: 3.8.2
+        maven-version: 3.9.0
+    
+    - name: Install zip
+      uses: montudor/action-zip@v0.1.1
 
     - name: Install
       run: mvn install
@@ -56,10 +62,7 @@ jobs:
       with:
         tag: "${{ steps.bump.outputs.version }}"
         tag_exists_error: false
-        message: "${{ steps.bump.outputs.version }} release"
-    
-    - name: Install zip
-      uses: montudor/action-zip@v0.1.1
+        message: "${{ steps.bump.outputs.version }}"
     
     - name: Zip Jars
       run: zip -q bundle.zip excel-creator.jar excel-creator-sources.jar excel-creator-javadoc.jar
@@ -70,7 +73,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         tag: ${{ steps.bump.outputs.version }}
-        name: Release ${{ steps.bump.outputs.version }}
+        name: ${{ steps.bump.outputs.version }}
 
     - name: Upload Release Asset 
       uses: actions/upload-release-asset@v1
@@ -81,8 +84,9 @@ jobs:
         asset_path: target/bundle.zip
         asset_name: jars.zip
         asset_content_type: application/zip
-
-    - name: Publish package
+    
+    - name: Publish to the Maven Central Repository
       run: mvn --batch-mode deploy
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}

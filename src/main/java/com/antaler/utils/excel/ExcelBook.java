@@ -25,7 +25,7 @@ import com.antaler.utils.excel.annotations.ExcelColumn;
 import com.antaler.utils.excel.annotations.ExcelItem;
 import com.antaler.utils.excel.styles.Styles;
 
-public class ExcelBook<T> {
+public final class ExcelBook<T> {
 
 	private final XSSFWorkbook book;
 	private final XSSFSheet sheet;
@@ -56,7 +56,7 @@ public class ExcelBook<T> {
 		sheet.setDisplayGridlines(excelItem.blank());
 		padding();
 		addLogo(clazz);
-		createHeaders(metadata.stream().map(ExcelData::getColumnData).map(ExcelColumn::title).toList());
+		createHeaders(metadata.stream().map(ExcelData::columnData).map(ExcelColumn::title).toList());
 	}
 
 	final byte[] create(final Iterable<T> data) {
@@ -155,7 +155,7 @@ public class ExcelBook<T> {
 			addValue(method, cell, excelData, t);
 			if (method.getReturnType().equals(LocalDateTime.class)) {
 				cell.setCellStyle(
-						Styles.date(book, excelData.getColumnData().dateFormat().getFormat(), excelItem.dataColor()));
+						Styles.date(book, excelData.columnData().dateFormat().getFormat(), excelItem.dataColor()));
 			} else {
 				cell.setCellStyle(styleData);
 			}
@@ -164,7 +164,7 @@ public class ExcelBook<T> {
 
 	private Method getMethod(T t, ExcelData excelData) {
 		try {
-			return t.getClass().getMethod("get%s".formatted(capitalize(excelData.getFieldName())), null);
+			return t.getClass().getMethod("get%s".formatted(capitalize(excelData.fieldName())), null);
 		} catch (NoSuchMethodException | SecurityException e) {
 			throw new IllegalArgumentException(e);
 		}
@@ -183,8 +183,8 @@ public class ExcelBook<T> {
 			} else if (method.getReturnType().equals(LocalDateTime.class)) {
 				cell.setCellValue((LocalDateTime) method.invoke(t));
 			} else if (method.getReturnType().equals(Boolean.class)) {
-				cell.setCellValue(((boolean) method.invoke(t)) ? excelData.getColumnData().trueValue()
-						: excelData.getColumnData().falseValue());
+				cell.setCellValue(((boolean) method.invoke(t)) ? excelData.columnData().trueValue()
+						: excelData.columnData().falseValue());
 			} else {
 				cell.setCellValue(method.invoke(t).toString());
 			}

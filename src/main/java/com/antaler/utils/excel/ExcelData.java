@@ -2,19 +2,7 @@ package com.antaler.utils.excel;
 
 import com.antaler.utils.excel.annotations.ExcelColumn;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-@Data
-@AllArgsConstructor
-public class ExcelData implements Comparable<ExcelData> {
-
-	private Class<?> type;
-
-	private String fieldName;
-
-	private ExcelColumn columnData;
-
+public record ExcelData(Class<?> type, String fieldName, ExcelColumn columnData) implements Comparable<ExcelData> {
 
 	@Override
 	public int compareTo(ExcelData other) {
