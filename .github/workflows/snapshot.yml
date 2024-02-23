@@ -39,7 +39,7 @@ jobs:
 
     - name: Update Version
       run: mvn -B versions:set -DnewVersion=${{ steps.bump.outputs.version }}-SNAPSHOT -DgenerateBackupPoms=false
-      
+
     - name: Configure Git User
       run: |
         git config user.name github-actions
@@ -52,7 +52,7 @@ jobs:
         git push
 
     - name: Publish to the Maven Central Repository
-      run: mvn --batch-mode deploy
+      run: mvn --batch-mode -s settings.xml deploy
       env:
         MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
