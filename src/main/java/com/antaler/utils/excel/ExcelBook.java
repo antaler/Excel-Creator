@@ -66,13 +66,10 @@ public final class ExcelBook<T> {
 			book.write(bos);
 			return bos.toByteArray();
 		} catch (IOException ignored) {
-			ignored.printStackTrace();
 		} finally {
 			try {
 				book.close();
-			} catch (IOException e) {
-				
-			}
+			} catch (IOException e) {}
 		}
 		return new byte[0];
 
