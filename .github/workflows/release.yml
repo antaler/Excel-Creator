@@ -37,15 +37,6 @@ jobs:
         git-email: github-actions@github.com
         git-username: github-actions
 
-    - name: Push Version
-      run: git push
-    
-    - name: Create Tag 
-      uses: rickstaa/action-create-tag@v1
-      id: "tag_create"
-      with:
-        tag: "${{ steps.bump.outputs.version }}"
-
     - name: Maven Install For Zip
       run: mvn install -Dgpg.skip
 
