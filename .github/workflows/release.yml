@@ -46,8 +46,8 @@ jobs:
       with:
         tag: "${{ steps.bump.outputs.version }}"
 
-    - name: Maven Install
-      run: mvn install
+    - name: Maven Install For Zip
+      run: mvn install -Dgpg.skip
 
     - name: Zip Jars
       run: zip -q bundle.zip excel-creator.jar excel-creator-sources.jar excel-creator-javadoc.jar
