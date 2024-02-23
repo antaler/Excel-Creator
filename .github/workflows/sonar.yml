@@ -2,8 +2,7 @@ name: SonarCloud
 on:
   push:
     branches:
-      - master
-      - dev
+      - main
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -20,6 +19,8 @@ jobs:
         with:
           java-version: 17
           distribution: 'temurin'
+          gpg-private-key: ${{ secrets.GPG_KEY }} 
+          gpg-passphrase: ${{ secrets.GPGP_PASSPHRASE }}
       - name: Cache SonarCloud packages
         uses: actions/cache@v3
         with:

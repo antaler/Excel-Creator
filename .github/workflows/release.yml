@@ -1,9 +1,8 @@
-name: Deploy Release
-
+name: Release
 
 on:  
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   release:
@@ -12,57 +11,44 @@ jobs:
         packages: write
     runs-on: ubuntu-latest
     steps:
-
-    - name: Checkout Latest Commit
-      uses: actions/checkout@v3
     
-    - name: Setup Java
-      uses: actions/setup-java@v3
+    - uses: actions/checkout@v4
+
+    - name: Install zip
+      uses: montudor/action-zip@v1.0.0
+    
+    - name: Set up Apache Maven Central
+      uses: actions/setup-java@v4
       with:
-        java-version: '17'
-        distribution: 'temurin'
+        java-version: 17
+        distribution: temurin
         server-id: ossrh
         server-username: MAVEN_USERNAME
         server-password: MAVEN_PASSWORD
+        gpg-private-key: ${{ secrets.GPG_KEY }} 
+        gpg-passphrase: ${{ secrets.GPGP_PASSPHRASE }}
+        cache: 'maven'
 
-    - name: Set up Maven
-      uses: stCarolas/setup-maven@v5
-      with:
-        maven-version: 3.9.0
-    
-    - name: Install zip
-      uses: montudor/action-zip@v0.1.1
-
-    - name: Install
-      run: mvn install
-      
     - name: Bump Version
       id: bump
-      uses: nnichols/maven-version-bump-action@v3
+      uses: nnichols/maven-version-bump-action@v5
       with:
         github-token: ${{ secrets.github_token }}
+        git-email: github-actions@github.com
+        git-username: github-actions
 
-    - name: Update Version
-      run: mvn -B versions:set -DnewVersion=${{ steps.bump.outputs.version }} -DgenerateBackupPoms=false
-    
-    - name: Commit Version
-      uses: devops-infra/action-commit-push@master
-      with:
-        github_token: "${{ secrets.GITHUB_TOKEN }}"
-        add_timestamp: true
-        commit_prefix: "[VERSION]"
-        commit_message: "UPGRADE VERSION"
-        force: false
-        target_branch: master
+    - name: Push Version
+      run: git push
     
     - name: Create Tag 
       uses: rickstaa/action-create-tag@v1
       id: "tag_create"
       with:
         tag: "${{ steps.bump.outputs.version }}"
-        tag_exists_error: false
-        message: "${{ steps.bump.outputs.version }}"
-    
+
+    - name: Maven Install
+      run: mvn install
+
     - name: Zip Jars
       run: zip -q bundle.zip excel-creator.jar excel-creator-sources.jar excel-creator-javadoc.jar
       working-directory: target
