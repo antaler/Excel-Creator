@@ -5,7 +5,7 @@
 	<groupId>com.antaler</groupId>
 	<artifactId>excel-creator</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 	<name>excel-creator</name>
 	<description>Create excel from a collection of items</description>
 	<url>https://github.com/antaler/excel-creator</url>
