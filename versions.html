@@ -30,7 +30,10 @@
             .then(versions => {
                 const $nav = document.getElementById("versions")
                 versions.map(createVersion).forEach($nav.appendChild);
-            }).catch(() => window.location.replace('/excel-creator/index.html'))
+            }).catch((err) =>{
+                console.log(err);
+                window.location.replace('/excel-creator/index.html')
+            })
 
     </script>
 </body>
