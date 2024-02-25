@@ -47,8 +47,11 @@ jobs:
   release:
     needs: [build]
     runs-on: ubuntu-22.04
-    if: ${{needs.build.outputs.NEW_VERSION}} == ${{ needs.build.outputs.OLD_VERSION }}
+    if: ${{ needs.build.outputs.NEW_VERSION == needs.build.outputs.OLD_VERSION }}
     steps:
+      
+      - uses: actions/checkout@v4
+
       - name: Set up Apache Maven Central
         uses: actions/setup-java@v4
         with:
@@ -146,7 +149,7 @@ jobs:
           ref: javadoc
       
       - name: Create Root index
-        run: echo "<script>window.location.replace('https://antaler.github.io/antaler/excel-creator/${{needs.build.outputs.NEW_VERSION}}');</script>" > index.html
+        run: echo "<script>window.location.replace('https://antaler.github.io/excel-creator/${{needs.build.outputs.NEW_VERSION}}');</script>" > index.html
       
       - name: Commit Index
         run: |
