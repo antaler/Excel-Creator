@@ -24,13 +24,13 @@
             return $a;
         }
 
-        fetch("/excel-creator/raw_versions.txt", )
+        fetch("excel-creator/raw_versions.txt", )
             .then(resp => resp.text())
             .then(text => text.split("\n"))
             .then(versions => {
                 const $nav = document.getElementById("versions")
                 versions.map(createVersion).forEach($nav.appendChild);
-            }).catch(() => window.location.replace('/index.html'))
+            }).catch(() => window.location.replace('excel-creator/index.html'))
 
     </script>
 </body>
