@@ -47,7 +47,7 @@ jobs:
   release:
     needs: [build]
     runs-on: ubuntu-22.04
-    if: ${{ needs.build.outputs.NEW_VERSION == needs.build.outputs.OLD_VERSION }}
+    if: ${{ needs.build.outputs.NEW_VERSION != needs.build.outputs.OLD_VERSION }}
     steps:
       
       - uses: actions/checkout@v4
