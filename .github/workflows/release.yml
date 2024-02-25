@@ -46,10 +46,13 @@ jobs:
 
     - name: Create Release
       id: create_release
-      uses: ncipollo/release-action@v1
+      uses: ncipollo/release-action@v1.14.0
       with:
         tag: ${{ steps.bump.outputs.version }}
         name: ${{ steps.bump.outputs.version }}
+        generateReleaseNotes: true
+        body: "Javadoc https://antaler.github.io/excel-creator/${{steps.bump.outputs.version}}"
+
 
     - name: Upload Release Asset 
       uses: actions/upload-release-asset@v1
@@ -98,11 +101,14 @@ jobs:
     permissions:
       contents: write
     steps:
+      
       - uses: actions/checkout@v4
         with:
           ref: javadoc
+      
       - name: Create Root index
         run: echo "<script>window.location.replace('https://antaler.github.io/antaler/excel-creator/${{github.ref_name}}');</script>" > index.html
+      
       - name: Commit Index
         run: |
           git config user.mail github-actions@github.com
