@@ -95,6 +95,8 @@ jobs:
     permissions: 
       contents: write
     steps:
+      - uses: actions/checkout@v4
+      
       - name: Set up Apache Maven Central
         uses: actions/setup-java@v4
         with:
