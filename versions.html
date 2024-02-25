@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>excel-creator Versions</title>
+    <style>
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>excel-creator versions</h1>
+    <nav id="versions"></ol>
+    <script>
+
+        function createVersion(version) {
+            const $a = document.createElement("a");
+            $a.innerText = version
+            $a.href = `/${version}`
+            return $a;
+        }
+
+        fetch("/versions.txt")
+            .then(resp => resp.text())
+            .then(text => text.split("\n"))
+            .then(versions => {
+                const $nav = document.getElementById("versions")
+                versions.map(createVersion).forEach($nav.appendChild);
+            }).catch(() => window.location.replace('/index.html'))
+
+    </script>
+</body>
+
+</html>
